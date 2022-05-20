@@ -1,3 +1,7 @@
+// const { fetchItem } = require("./helpers/fetchItem");
+
+const cartSection = document.querySelector('.cart__items');
+
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
   img.className = 'item__image';
@@ -28,16 +32,45 @@ function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
 }
 
-function cartItemClickListener(event) {
-  // coloque seu código aqui
-}
+// function cartItemClickListener(event) {
+//   const itemsButtons = document.querySelectorAll('.item__add');
+//   itemsButtons.forEach((item) => document.addEventListener('click', () => {
+//     cartData(item);    
+//   }));
+// }
 
-function createCartItemElement({ sku, name, salePrice }) {
-  const li = document.createElement('li');
-  li.className = 'cart__item';
-  li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
-  li.addEventListener('click', cartItemClickListener);
-  return li;
-}
+const itemsSection = document.querySelector('.items');
+const printItems = async () => {
+  const products = await fetchProducts('computador');
+  const { results } = products;
+  results.forEach((product) => {
+    const item = createProductItemElement({
+      sku: product.id,
+      name: product.title,
+      image: product.thumbnail });
+      itemsSection.appendChild(item);
+    });
+  };
 
-window.onload = () => { };
+  function createCartItemElement({ sku, name, salePrice }) {
+    const li = document.createElement('li');
+    li.className = 'cart__item';
+    li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
+    li.addEventListener('click', cartItemClickListener);
+    return li;
+  }
+
+  const cartData = async (item) => {
+    const getSku = item.parentElement.firstChild.innerText;
+    const { id, title, price } = await fetchItem(sku);
+    cartSection.appendChild(createCartItemElement({
+      sku: id,
+      name: title,
+      salePrice: price,
+    }));
+  };
+  
+window.onload = async () => {
+  await printItems();
+  await cartItemClickListener();
+ };
