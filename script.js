@@ -1,5 +1,3 @@
-// const { fetchItem } = require("./helpers/fetchItem");
-
 const cartSection = document.querySelector('.cart__items');
 
 function createProductImageElement(imageSource) {
@@ -32,12 +30,15 @@ function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
 }
 
-// function cartItemClickListener(event) {
-//   const itemsButtons = document.querySelectorAll('.item__add');
-//   itemsButtons.forEach((item) => document.addEventListener('click', () => {
-//     cartData(item);    
-//   }));
-// }
+function cartItemClickListener(event) {
+}
+
+const buttons = async () => {
+  const itemsButtons = document.querySelectorAll('.item__add');
+  itemsButtons.forEach((item) => item.addEventListener('click', () => {
+    cartData(item);    
+  }));
+};
 
 const itemsSection = document.querySelector('.items');
 const printItems = async () => {
@@ -56,13 +57,13 @@ const printItems = async () => {
     const li = document.createElement('li');
     li.className = 'cart__item';
     li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
-    li.addEventListener('click', cartItemClickListener);
+    li.addEventListener('click', buttons);
     return li;
   }
 
   const cartData = async (item) => {
     const getSku = item.parentElement.firstChild.innerText;
-    const { id, title, price } = await fetchItem(sku);
+    const { id, title, price } = await fetchItem(getSku);
     cartSection.appendChild(createCartItemElement({
       sku: id,
       name: title,
@@ -72,5 +73,5 @@ const printItems = async () => {
   
 window.onload = async () => {
   await printItems();
-  await cartItemClickListener();
+  await buttons();
  };
