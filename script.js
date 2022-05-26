@@ -30,12 +30,8 @@ function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
 }
 
-async function cartItemClickListener(event) {
-  const cartItemsButtons = document.querySelectorAll('.cart__item');
-  cartItemsButtons.forEach((item) => item.addEventListener('click', () => {
+function cartItemClickListener(event) {
     event.target.remove();
-  }));
-  return cartItemsButtons;
 }
 
 const itemsSection = document.querySelector('.items');
@@ -79,5 +75,4 @@ const printItems = async () => {
   window.onload = async () => {
   await printItems();
   await buttons();
-  await cartItemClickListener();
  };
