@@ -30,15 +30,13 @@ function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText;
 }
 
-function cartItemClickListener(event) {
-}
-
-const buttons = async () => {
-  const itemsButtons = document.querySelectorAll('.item__add');
-  itemsButtons.forEach((item) => item.addEventListener('click', () => {
-    cartData(item);    
+async function cartItemClickListener(event) {
+  const cartItemsButtons = document.querySelectorAll('.cart__item');
+  cartItemsButtons.forEach((item) => item.addEventListener('click', () => {
+    event.target.remove();
   }));
-};
+  return cartItemsButtons;
+}
 
 const itemsSection = document.querySelector('.items');
 const printItems = async () => {
@@ -52,15 +50,15 @@ const printItems = async () => {
       itemsSection.appendChild(item);
     });
   };
-
+  
   function createCartItemElement({ sku, name, salePrice }) {
     const li = document.createElement('li');
     li.className = 'cart__item';
     li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
-    li.addEventListener('click', buttons);
+    li.addEventListener('click', cartItemClickListener);
     return li;
   }
-
+  
   const cartData = async (item) => {
     const getSku = item.parentElement.firstChild.innerText;
     const { id, title, price } = await fetchItem(getSku);
@@ -71,7 +69,15 @@ const printItems = async () => {
     }));
   };
   
-window.onload = async () => {
+  const buttons = async () => {
+    const itemsButtons = document.querySelectorAll('.item__add');
+    itemsButtons.forEach((item) => item.addEventListener('click', () => {
+      cartData(item);    
+    }));
+  };
+
+  window.onload = async () => {
   await printItems();
   await buttons();
+  await cartItemClickListener();
  };
