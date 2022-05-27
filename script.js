@@ -1,4 +1,5 @@
 const cartSection = document.querySelector('.cart__items');
+// const cartItems = document.querySelectorAll('.cart__item');
 
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
@@ -26,9 +27,9 @@ function createProductItemElement({ sku, name, image }) {
   return section;
 }
 
-function getSkuFromProductItem(item) {
-  return item.querySelector('span.item__sku').innerText;
-}
+// function getSkuFromProductItem(item) {
+//   return item.querySelector('span.item__sku').innerText;
+// }
 
 function cartItemClickListener(event) {
     event.target.remove();
@@ -75,4 +76,5 @@ const printItems = async () => {
   window.onload = async () => {
   await printItems();
   await buttons();
+  saveCartItems();
  };
