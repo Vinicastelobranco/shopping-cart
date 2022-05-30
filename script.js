@@ -14,6 +14,23 @@ function createCustomElement(element, className, innerText) {
   return e;
 }
 
+let cartTotal = 0;
+const getTotalPrice = document.getElementsByClassName('total-price')[0];
+function totalPrice(value) { 
+  cartTotal += value;
+  getTotalPrice.innerText = cartTotal;
+}
+
+function emptyCart() {
+  const emptyCartButton = document.getElementsByClassName('empty-cart')[0];
+  emptyCartButton.addEventListener('click', () => {
+    const clearCart = document.getElementsByClassName('cart__items')[0];
+    clearCart.innerHTML = '';
+    localStorage.clear();
+    totalPrice(cartTotal * -1);
+  });
+}
+
 function createProductItemElement({ sku, name, image }) {
   const section = document.createElement('section');
   section.className = 'item';
@@ -31,7 +48,12 @@ function createProductItemElement({ sku, name, image }) {
 // }
 
 function cartItemClickListener(event) {
+  const item = event.target.innerText;
+  const getPrice = item.split('PRICE: $')[1];
+  const minusValue = parseFloat(getPrice) * -1;
+  totalPrice(minusValue);
     event.target.remove();
+    saveCartItems(document.getElementsByClassName('cart__items')[0]);
 }
 
 const itemsSection = document.querySelector('.items');
@@ -58,6 +80,7 @@ const printItems = async () => {
   const cartData = async (item) => {
     const getSku = item.parentElement.firstChild.innerText;
     const { id, title, price } = await fetchItem(getSku);
+    const result = await fetchItem(getSku);
     cartSection.appendChild(createCartItemElement({
       sku: id,
       name: title,
@@ -65,6 +88,7 @@ const printItems = async () => {
     }));
     const cartItems = cartSection.innerHTML;
     saveCartItems(cartItems);
+    totalPrice(result.cartTotal);
   };
   
   const buttons = async () => {
@@ -77,7 +101,8 @@ const printItems = async () => {
   window.onload = async () => {
   await printItems();
   await buttons();
-  if (!localStorage.getItem('cartItems') === false) {
+  emptyCart();
+  if (!localStorage.getItem('cartItems') === null) {
     const savedItems = JSON.parse(getSavedCartItems());
     const storageResult = document.querySelector('.cart__items');
     storageResult.innerHTML = savedItems;
