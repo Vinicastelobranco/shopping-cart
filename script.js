@@ -43,6 +43,14 @@ function createProductItemElement({ sku, name, image }) {
   return section;
 }
 
+const loadingText = () => {
+  const getParent = document.getElementsByClassName('items')[0];
+  const textElement = document.createElement('p');
+  textElement.className = 'loading';
+  textElement.innerText = 'Carregando';
+  getParent.appendChild(textElement);
+};
+
 // function getSkuFromProductItem(item) {
 //   return item.querySelector('span.item__sku').innerText;
 // }
@@ -102,6 +110,7 @@ const printItems = async () => {
   await printItems();
   await buttons();
   emptyCart();
+  loadingText();
   if (!localStorage.getItem('cartItems') === null) {
     const savedItems = JSON.parse(getSavedCartItems());
     const storageResult = document.querySelector('.cart__items');
