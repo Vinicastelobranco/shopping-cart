@@ -43,13 +43,18 @@ function createProductItemElement({ sku, name, image }) {
   return section;
 }
 
-const loadingText = () => {
+function addLoadingText() {
   const getParent = document.getElementsByClassName('items')[0];
   const textElement = document.createElement('p');
   textElement.className = 'loading';
   textElement.innerText = 'Carregando';
-  getParent.appendChild(textElement);
-};
+  return getParent.appendChild(textElement);
+}
+
+function removeLoadingText() {
+  const loadingText = document.querySelector('.loading');
+  loadingText.parentNode.removeChild(loadingText);  
+}
 
 // function getSkuFromProductItem(item) {
 //   return item.querySelector('span.item__sku').innerText;
@@ -61,7 +66,7 @@ function cartItemClickListener(event) {
   const minusValue = parseFloat(getPrice) * -1;
   totalPrice(minusValue);
     event.target.remove();
-    saveCartItems(document.getElementsByClassName('cart__items')[0]);
+    saveCartItems(document.getElementsByClassName('cart__items')[0].innerHTML);
 }
 
 const itemsSection = document.querySelector('.items');
@@ -76,7 +81,7 @@ const printItems = async () => {
       itemsSection.appendChild(item);
     });
   };
-  
+    
   function createCartItemElement({ sku, name, salePrice }) {
     const li = document.createElement('li');
     li.className = 'cart__item';
@@ -88,6 +93,7 @@ const printItems = async () => {
   const cartData = async (item) => {
     const getSku = item.parentElement.firstChild.innerText;
     const { id, title, price } = await fetchItem(getSku);
+    addLoadingText();
     const result = await fetchItem(getSku);
     cartSection.appendChild(createCartItemElement({
       sku: id,
@@ -95,8 +101,9 @@ const printItems = async () => {
       salePrice: price,
     }));
     const cartItems = cartSection.innerHTML;
-    saveCartItems(cartItems);
+    saveCartItems(cartItems.innerHTML);
     totalPrice(result.cartTotal);
+    removeLoadingText();
   };
   
   const buttons = async () => {
@@ -107,10 +114,11 @@ const printItems = async () => {
   };
 
   window.onload = async () => {
+  addLoadingText();
   await printItems();
+  removeLoadingText();
   await buttons();
   emptyCart();
-  loadingText();
   if (!localStorage.getItem('cartItems') === null) {
     const savedItems = JSON.parse(getSavedCartItems());
     const storageResult = document.querySelector('.cart__items');
