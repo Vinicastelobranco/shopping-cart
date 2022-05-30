@@ -1,4 +1,5 @@
 const cartSection = document.querySelector('.cart__items');
+const priceTotal = document.querySelector('.total-price');
 
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
@@ -14,12 +15,19 @@ function createCustomElement(element, className, innerText) {
   return e;
 }
 
-let cartTotal = 0;
-const getTotalPrice = document.getElementsByClassName('total-price')[0];
-function totalPrice(value) { 
-  cartTotal += value;
-  getTotalPrice.innerText = cartTotal;
-}
+const totalPrice = () => {  
+  let prices = 0;
+  const itemsElement = document.querySelectorAll('.cart__item');
+  const itemsParent = document.querySelector('.cart');
+  itemsParent.appendChild(priceTotal);
+  itemsElement.forEach((item) => {
+    const splitPrice = item.innerText.split('$');
+    prices += parseFloat(splitPrice[1]);
+  });
+  if (itemsElement.length === 0) {
+    prices += 0;
+  } priceTotal.innerText = `${prices}`;
+};
 
 function emptyCart() {
   const emptyCartButton = document.getElementsByClassName('empty-cart')[0];
@@ -27,7 +35,7 @@ function emptyCart() {
     const clearCart = document.getElementsByClassName('cart__items')[0];
     clearCart.innerHTML = '';
     localStorage.clear();
-    totalPrice(cartTotal * -1);
+    totalPrice();
   });
 }
 
@@ -61,11 +69,8 @@ function removeLoadingText() {
 // }
 
 function cartItemClickListener(event) {
-  const item = event.target.innerText;
-  const getPrice = item.split('PRICE: $')[1];
-  const minusValue = parseFloat(getPrice) * -1;
-  totalPrice(minusValue);
-    event.target.remove();
+  event.target.remove();
+  totalPrice();
     saveCartItems(document.getElementsByClassName('cart__items')[0].innerHTML);
 }
 
@@ -93,8 +98,7 @@ const printItems = async () => {
   const cartData = async (item) => {
     const getSku = item.parentElement.firstChild.innerText;
     const { id, title, price } = await fetchItem(getSku);
-    addLoadingText();
-    const result = await fetchItem(getSku);
+    addLoadingText();    
     cartSection.appendChild(createCartItemElement({
       sku: id,
       name: title,
@@ -102,7 +106,7 @@ const printItems = async () => {
     }));
     const cartItems = cartSection.innerHTML;
     saveCartItems(cartItems.innerHTML);
-    totalPrice(result.cartTotal);
+    totalPrice();
     removeLoadingText();
   };
   
